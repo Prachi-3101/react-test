@@ -16,14 +16,18 @@ export default function PostForm({post}) {
     })
 
     const navigate = useNavigate()
-    const userData = useSelector((state) => state.userData);
+    const userData = useSelector((state) => state.auth.userData);
+
 
     const submit = async (data) => {
+        console.log(data);
+        
         if(post){
             const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
 
             if(file){
-                appwriteService.deleteFile(post.featuredImage);
+              appwriteService.deleteFile(post.featuredImage);
+               
             }
 
             const dbPost = await appwriteService.updatePost(post.$id,{
@@ -41,7 +45,7 @@ export default function PostForm({post}) {
                 const fileId = file.$id;
                 data.featuredImage = fileId;
                 const dbPost = await appwriteService.createPost({...data, userId: userData.$id});
-
+       
                 if(dbPost){
                     navigate(`/post/${dbPost.$id}`);
                 }
@@ -112,12 +116,12 @@ export default function PostForm({post}) {
                     </div>
                 )}
                 <Select
-                    option={["active", "inactive"]}
+                    options={["active", "inactive"]}
                     label="Status"
                     className="mb-4"
                     {...register("status", { required: true })}
                 />
-                <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full">
+                <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full cursor-pointer">
                     {post ? "Update" : "Submit"}
                 </Button>
             </div>
